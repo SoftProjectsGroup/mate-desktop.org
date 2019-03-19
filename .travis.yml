@@ -11,7 +11,7 @@ cache:
   - output/
 
 before_install:
-  - curl -Ls -o docker-build https://github.com/mate-desktop/mate-dev-scripts/raw/master/travis/docker-build
+  - curl -Ls -o docker-build https://github.com/mate-desktop/mate-dev-scripts/raw/travis/travis/docker-build
   - chmod +x docker-build
 
 install:
@@ -33,7 +33,8 @@ deploy:
     local-dir: www
     on:
       all_branches: true
-      condition: '$TRAVIS_BRANCH != auto-deploy-website'
+      condition: '$TRAVIS_BRANCH != master'
+
   #deploy offical website
   - provider: script
     script: ./docker-build -vvvv --config .travis.yml --release scripts
@@ -83,7 +84,7 @@ before_scripts:
   - fi
 
 build_scripts:
-  - if [[ "$TRAVIS_SECURE_ENV_VARS" == "true" && "$TRAVIS_BRANCH" != "auto-deploy-website" ]]; then
+  - if [[ "$TRAVIS_SECURE_ENV_VARS" == "true" && "$TRAVIS_BRANCH" != "master" ]]; then
   -     sed -i '/SITE_URL/s!//mate-desktop.org/!//preview.mate-desktop.dev/!' conf.py
   -     sed -i '/WEBSITE_PREVIEW/s!False!True!' conf.py
   -     sed -i 's!PREVIEW_COMMITID!'${TRAVIS_COMMIT:0:12}'!' conf.py
@@ -99,12 +100,17 @@ after_scripts:
   - cp .doit.db cache
   - find www -type d -exec chmod 755 {} \;
   - find www -type f -exec chmod 644 {} \;
-  - echo 'preview.mate-desktop.dev' > www/CNAME
+  - if [[ "$TRAVIS_SECURE_ENV_VARS" == "true" && "$TRAVIS_BRANCH" != "master" ]]; then
+  -     echo 'preview.mate-desktop.dev' > www/CNAME
+  - fi
 
 releases:
   scripts_release:
+    - pwd
     - cd $TRAVIS_BUILD_DIR
-    - sudo chown $USER -R $TRAVIS_BUILD_DIR
+    - pwd
+    - id
+    - ls -l
     - pwd
     - ls -l ~/.ssh
     - echo 'update offical website...'
