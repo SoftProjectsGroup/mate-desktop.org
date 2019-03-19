@@ -37,7 +37,7 @@ deploy:
 
   #deploy offical website
   - provider: script
-    script: ./docker-build --verbose --config .travis.yml --release scripts
+    script: ./docker-build -vvvv --config .travis.yml --release scripts
     skip_cleanup: true
     #on:
     #  branch: master
