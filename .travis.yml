@@ -33,14 +33,13 @@ deploy:
     local-dir: www
     on:
       all_branches: true
-      condition: '$TRAVIS_BRANCH != master'
-
+      condition: '$TRAVIS_BRANCH != auto-deploy-website'
   #deploy offical website
   - provider: script
     script: ./docker-build -vvvv --config .travis.yml --release scripts
     skip_cleanup: true
-    #on:
-    #  branch: master
+    on:
+      branch: auto-deploy-website
 
 after_success:
   - 'if [[ "$TRAVIS_SECURE_ENV_VARS" == "true" && "$TRAVIS_PULL_REQUEST" != "false" ]]; then
@@ -84,7 +83,7 @@ before_scripts:
   - fi
 
 build_scripts:
-  - if [[ "$TRAVIS_SECURE_ENV_VARS" == "true" && "$TRAVIS_BRANCH" != "master" ]]; then
+  - if [[ "$TRAVIS_SECURE_ENV_VARS" == "true" && "$TRAVIS_BRANCH" != "auto-deploy-website" ]]; then
   -     sed -i '/SITE_URL/s!//mate-desktop.org/!//preview.mate-desktop.dev/!' conf.py
   -     sed -i '/WEBSITE_PREVIEW/s!False!True!' conf.py
   -     sed -i 's!PREVIEW_COMMITID!'${TRAVIS_COMMIT:0:12}'!' conf.py
